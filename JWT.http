@@ -1,6 +1,31 @@
-@JWT_HostAddress = http://localhost:5194
+@host = https://localhost:7126
 
-GET {{JWT_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{host}}/api/v1/Task
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlcjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzkzNzg2ODk3LCJpc3MiOiJFeGFtcGxlQXBpIiwiYXVkIjoiRXhhbXBsZUFwaUNsaWVudCJ9.VasDe4Bn03DGD75vKlMEjtLeN5QBz9dUYtQx3hhUffE
+
+
+{
+  "title": "Вторая задача",
+  "description": "Проверка работы"
+}
+
+### 
+
+GET {{host}}/api/v1/Task
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlcjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzkzNzg2ODk3LCJpc3MiOiJFeGFtcGxlQXBpIiwiYXVkIjoiRXhhbXBsZUFwaUNsaWVudCJ9.VasDe4Bn03DGD75vKlMEjtLeN5QBz9dUYtQx3hhUffE
+
 
 ###
+
+PUT {{host}}/api/v1/Task/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlcjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzkzNzg2ODk3LCJpc3MiOiJFeGFtcGxlQXBpIiwiYXVkIjoiRXhhbXBsZUFwaUNsaWVudCJ9.VasDe4Bn03DGD75vKlMEjtLeN5QBz9dUYtQx3hhUffE
+{
+  "id": 1,
+  "title": "Первая задача",
+  "description": "Проверка работы выполнена",
+  "isCompleted": true
+}
+
+

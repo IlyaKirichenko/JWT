@@ -28,7 +28,7 @@ public partial class JwtContext : DbContext
         {
             entity.ToTable("Task");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Description).HasMaxLength(50);
             entity.Property(e => e.OwnerLogin).HasMaxLength(50);
             entity.Property(e => e.Title).HasMaxLength(50);
@@ -38,9 +38,9 @@ public partial class JwtContext : DbContext
         {
             entity.ToTable("User");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Login).HasMaxLength(50);
-            entity.Property(e => e.PasswordHash).HasMaxLength(50);
+            entity.Property(e => e.PasswordHash).HasMaxLength(255);
             entity.Property(e => e.Role).HasMaxLength(50);
         });
 
