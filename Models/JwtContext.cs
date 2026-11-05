@@ -19,9 +19,9 @@ public partial class JwtContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    /* protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-         => optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=JWT;Trusted_Connection=True;TrustServerCertificate=True;");
- */
+   /* protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=JWT;Trusted_Connection=True;TrustServerCertificate=True;");
+*/
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
          => optionsBuilder.UseSqlServer("Server=sql.ects;Database=JWT;User Id=student_00;Password=student_00;TrustServerCertificate=True;");
 

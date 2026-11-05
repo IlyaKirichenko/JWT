@@ -21,23 +21,16 @@ namespace JWT.Controllers
             _context = context;
         }
 
+        public record CreateTaskRequest(string Title, string Description);
+        public record UpdateTaskRequest(string Title, string Description, bool IsCompleted);
+
         // GET: api/<TaskController>
         [HttpGet]
         public async Task<IActionResult> GetAllTasks()
         {
             var currentLogin = User.Identity?.Name;
-
-
-            if (User.IsInRole("Admin"))
-            {
-                var task = await _context.Tasks.ToListAsync();
-                return Ok(task);
-            }
-            else
-            {
-                var task = await _context.Tasks.Where(o => o.OwnerLogin == currentLogin).ToListAsync();
-                return Ok(task);
-            }
+            var task = await _context.Tasks.Where(o => o.OwnerLogin == currentLogin).ToListAsync();
+            return Ok(task);
         }
 
         [HttpGet("all")]
@@ -50,7 +43,7 @@ namespace JWT.Controllers
         }
 
         // GET api/<TaskController>/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetTask(int id)
         {
             var task = await _context.Tasks.FindAsync(id);
@@ -70,11 +63,15 @@ namespace JWT.Controllers
 
         // POST api/<TaskController>
         [HttpPost]
-        public async Task<IActionResult> PostTask([FromBody] Models.Task newTask)
+        public async Task<IActionResult> PostTask([FromBody] CreateTaskRequest request)
         {
-            newTask.OwnerLogin = User.Identity?.Name!;
-
-            newTask.IsCompleted = false;
+            var newTask = new Models.Task
+            {
+                Title = request.Title,
+                Description = request.Description,
+                OwnerLogin = User.Identity?.Name!,
+                IsCompleted = false
+            };
 
             _context.Tasks.Add(newTask);
             await _context.SaveChangesAsync();
@@ -82,14 +79,9 @@ namespace JWT.Controllers
             return CreatedAtAction(nameof(GetTask), new { id = newTask.Id }, newTask);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTask(int id, [FromBody] Models.Task newTask)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> PutTask(int id, [FromBody] UpdateTaskRequest newTask)
         {
-            if (newTask == null)
-            {
-                return BadRequest();
-            }
-
             var exisTask = await _context.Tasks.FindAsync(id);
 
             if (exisTask == null)
@@ -112,7 +104,7 @@ namespace JWT.Controllers
         }
 
         // DELETE api/<TaskController>/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteTask(int id)
         {
             var task = await _context.Tasks.FindAsync(id);

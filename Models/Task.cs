@@ -11,7 +11,7 @@ public partial class Task
 
     public string Description { get; set; } = null!;
 
-    public string? OwnerLogin { get; set; }
+    public string OwnerLogin { get; set; } = null!;
 
     public bool IsCompleted { get; set; }
 }
