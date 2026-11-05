@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace JWT.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/tasks")]
     [ApiController]
     [Authorize]
     public class TaskController : ControllerBase
@@ -38,6 +38,15 @@ namespace JWT.Controllers
                 var task = await _context.Tasks.Where(o => o.OwnerLogin == currentLogin).ToListAsync();
                 return Ok(task);
             }
+        }
+
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllTaskAdmin()
+        {
+            var task = await _context.Tasks.ToListAsync();
+
+            return Ok(task);
         }
 
         // GET api/<TaskController>/5
@@ -76,7 +85,7 @@ namespace JWT.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTask(int id, [FromBody] Models.Task newTask)
         {
-            if (newTask == null || id != newTask.Id)
+            if (newTask == null)
             {
                 return BadRequest();
             }
@@ -99,7 +108,7 @@ namespace JWT.Controllers
 
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(exisTask);
         }
 
         // DELETE api/<TaskController>/5
@@ -111,6 +120,12 @@ namespace JWT.Controllers
             {
                 return NotFound();
             }
+
+            if (!User.IsInRole("Admin") && User.Identity?.Name != task.OwnerLogin)
+            {
+                return Forbid(); // 403
+            }
+
             _context.Tasks.Remove(task);
             await _context.SaveChangesAsync();
 
