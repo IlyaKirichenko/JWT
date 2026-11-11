@@ -2,10 +2,10 @@
 
 POST {{host}}/api/v1/tasks
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlcjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzkzODY2MTA0LCJpc3MiOiJFeGFtcGxlQXBpIiwiYXVkIjoiRXhhbXBsZUFwaUNsaWVudCJ9.RsU_bGkMa5qxnguWc7T_SGKPXUJBvOrfOt_jhfQulx4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlciIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3OTQzNzA4NzYsImlzcyI6IkV4YW1wbGVBcGkiLCJhdWQiOiJFeGFtcGxlQXBpQ2xpZW50In0.1RkT7xdE9wByzFReQWNGw9xGlNmJuH-x3qpfJzuwrLQ
 
 {
-  "title": "Третья задача",
+  "title": "Первая задача",
   "description": "Проверка работы"
 }
 
@@ -16,12 +16,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hc
 
 ###
 
-PUT {{host}}/api/v1/tasks/1
+PUT {{host}}/api/v1/tasks/8
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlcjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzkzODY2MTA0LCJpc3MiOiJFeGFtcGxlQXBpIiwiYXVkIjoiRXhhbXBsZUFwaUNsaWVudCJ9.RsU_bGkMa5qxnguWc7T_SGKPXUJBvOrfOt_jhfQulx4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlciIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3OTQzNzA4NzYsImlzcyI6IkV4YW1wbGVBcGkiLCJhdWQiOiJFeGFtcGxlQXBpQ2xpZW50In0.1RkT7xdE9wByzFReQWNGw9xGlNmJuH-x3qpfJzuwrLQ
 
 {
-  "id": 1,
+  "id": 6,
   "title": "Первая задача",
   "description": "Проверка работы выполнена",
   "isCompleted": true
