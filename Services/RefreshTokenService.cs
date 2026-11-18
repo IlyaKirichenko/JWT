@@ -16,6 +16,8 @@ namespace JWT.Services
             _context = context;
         }
 
+        public User? CurrentUser { get; set; }
+
         public async Task<string> GenerateRefreshToken(int userId)
         {
             var randomBytes = RandomNumberGenerator.GetBytes(32);
@@ -44,21 +46,19 @@ namespace JWT.Services
             var oldHashToken = SHA256.HashData(Encoding.UTF8.GetBytes(oldToken));
             var oldHash = Convert.ToHexString(oldHashToken);
 
-            var exsitingHash = await _context.RefreshTokens.FirstOrDefaultAsync(t => t.TokenHash == oldHash);
+            var exsitingHash = await _context.RefreshTokens
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.TokenHash == oldHash);
 
             if (exsitingHash == null)
             {
                 return null;
             }
 
-
-
-            var userId = exsitingHash.UserId;
-
             var now = DateTime.UtcNow;
 
             var deletedToken = await _context.RefreshTokens
-                .Where(d => d.TokenHash == oldToken && d.ExpiresAt > now)
+                .Where(d => d.TokenHash == oldHash && d.ExpiresAt > now)
                 .ExecuteDeleteAsync();
 
             if(deletedToken == 0)
@@ -66,7 +66,9 @@ namespace JWT.Services
                 return null;
             }
 
-            var newToken = await GenerateRefreshToken(userId);
+            CurrentUser = exsitingHash.User;
+
+            var newToken = await GenerateRefreshToken(CurrentUser.Id);
 
             return newToken;
         }
