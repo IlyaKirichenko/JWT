@@ -41,36 +41,63 @@ namespace JWT.Services
             return convToken;
         }
 
-        public async Task<string> RotateToken(string oldToken)
+        public async Task<string?> RotateToken(string oldToken)
         {
-            var oldHashToken = SHA256.HashData(Encoding.UTF8.GetBytes(oldToken));
-            var oldHash = Convert.ToHexString(oldHashToken);
-
-            var exsitingHash = await _context.RefreshTokens
-                .Include(t => t.User)
-                .FirstOrDefaultAsync(t => t.TokenHash == oldHash);
-
-            if (exsitingHash == null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
+                var oldHashToken = SHA256.HashData(Encoding.UTF8.GetBytes(oldToken));
+                var oldHash = Convert.ToHexString(oldHashToken);
+
+                var existingToken = await _context.RefreshTokens
+                    .Include(t => t.User)
+                    .FirstOrDefaultAsync(t => t.TokenHash == oldHash);
+
+                var now = DateTime.UtcNow;
+
+                if (existingToken == null || existingToken.ExpiresAt <= now)
+                {
+                    return null;
+                }
+
+                CurrentUser = existingToken.User;
+
+                _context.RefreshTokens.Remove(existingToken);
+                await _context.SaveChangesAsync();
+
+                var newToken = await GenerateRefreshToken(CurrentUser.Id);
+
+                await transaction.CommitAsync();
+
+                return newToken;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
                 return null;
             }
+        }
+        public async Task<string?> GetTokenOwner(string token)
+        {
+            var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
+            var refreshToken = await _context.RefreshTokens
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.TokenHash == hash);
 
-            var now = DateTime.UtcNow;
+            return refreshToken?.User?.Login;
+        }
+        public async Task<bool> DeleteTokenForUser(string token, string login)
+        {
+            var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
+            var refreshToken = await _context.RefreshTokens
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.TokenHash == hash && r.User.Login == login);
 
-            var deletedToken = await _context.RefreshTokens
-                .Where(d => d.TokenHash == oldHash && d.ExpiresAt > now)
-                .ExecuteDeleteAsync();
+            if (refreshToken == null) return false;
 
-            if(deletedToken == 0)
-            {
-                return null;
-            }
-
-            CurrentUser = exsitingHash.User;
-
-            var newToken = await GenerateRefreshToken(CurrentUser.Id);
-
-            return newToken;
+            _context.RefreshTokens.Remove(refreshToken);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

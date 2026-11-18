@@ -19,6 +19,7 @@ builder.Services.AddDbContext<JwtContext>();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddScoped<RefreshTokenService>();
+builder.Services.AddScoped<JwtRevocationService>();
 
 var key = builder.Configuration["Jwt:Key"]
     ?? throw new Exception("Не задан секретный ключ JWT");
@@ -43,6 +44,26 @@ builder.Services
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
             ClockSkew = TimeSpan.Zero
+        };
+        option.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var jti = context.Principal?.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti)?.Value;
+
+                if (string.IsNullOrEmpty(jti))
+                {
+                    context.Fail("В JWT отсутствует jti");
+                    return;
+                }
+
+                var revocationService = context.HttpContext.RequestServices.GetRequiredService<JwtRevocationService>();
+
+                if (await revocationService.IsRevoked(jti))
+                {
+                    context.Fail("JWT отозван");
+                }
+            }
         };
     });
 
