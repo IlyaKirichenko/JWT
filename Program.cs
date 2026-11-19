@@ -19,7 +19,7 @@ builder.Services.AddDbContext<JwtContext>();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddScoped<RefreshTokenService>();
-builder.Services.AddScoped<JwtRevocationService>();
+builder.Services.AddScoped<RevokeTokenService>();
 
 var key = builder.Configuration["Jwt:Key"]
     ?? throw new Exception("Не задан секретный ключ JWT");
@@ -57,7 +57,7 @@ builder.Services
                     return;
                 }
 
-                var revocationService = context.HttpContext.RequestServices.GetRequiredService<JwtRevocationService>();
+                var revocationService = context.HttpContext.RequestServices.GetRequiredService<RevokeTokenService>();
 
                 if (await revocationService.IsRevoked(jti))
                 {

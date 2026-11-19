@@ -4,11 +4,11 @@ using Task = System.Threading.Tasks.Task;
 
 namespace JWT.Services
 {
-    public class JwtRevocationService
+    public class RevokeTokenService
     {
         private readonly JwtContext _context;
 
-        public JwtRevocationService(JwtContext context)
+        public RevokeTokenService(JwtContext context)
         {
             _context = context;
         }

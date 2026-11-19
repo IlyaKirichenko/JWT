@@ -23,9 +23,9 @@ namespace JWT.Controllers
         private readonly IPasswordHasher<User> _hasher;
         private readonly IConfiguration _configuration;
         private readonly RefreshTokenService _refreshTokenService;
-        private readonly JwtRevocationService _revocationService;
+        private readonly RevokeTokenService _revocationService;
 
-        public AuthController(JwtContext context, IPasswordHasher<User> hasher, IConfiguration configuration, RefreshTokenService refreshTokenService, JwtRevocationService revocationService)
+        public AuthController(JwtContext context, IPasswordHasher<User> hasher, IConfiguration configuration, RefreshTokenService refreshTokenService, RevokeTokenService revocationService)
         {
             _context = context;
             _hasher = hasher;
