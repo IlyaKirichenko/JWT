@@ -51,7 +51,7 @@ namespace JWT.Controllers
                 issuer: "ExampleApi",
                 audience: "ExampleApiClient",
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(60),
+                expires: DateTime.UtcNow.AddSeconds(60),
                 signingCredentials: credentials
                 );
             return new JwtSecurityTokenHandler().WriteToken(token); 
@@ -134,23 +134,30 @@ namespace JWT.Controllers
         public async Task<IActionResult> Logout(LogoutRequest request)
         {
             var currentUserLogin = User.Identity?.Name;
-            var jti = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti)?.Value;
-            var expClaim = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Exp)?.Value;
+    var jti = User.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+    var expClaim = User.FindFirst(JwtRegisteredClaimNames.Exp)?.Value;
 
-            if (string.IsNullOrEmpty(jti) || string.IsNullOrEmpty(expClaim))
-                return Unauthorized();
+    if (string.IsNullOrEmpty(currentUserLogin) || string.IsNullOrEmpty(jti) || string.IsNullOrEmpty(expClaim))
+        return Unauthorized();
 
-            var ownerLogin = await _refreshTokenService.GetTokenOwner(request.refresh_token);
-            if (ownerLogin == null) return Unauthorized("Токен не найден или просрочен");
-            if (ownerLogin != currentUserLogin) return Forbid(); 
+    if (string.IsNullOrEmpty(request.refresh_token))
+        return Unauthorized();
 
-            var isDeleted = await _refreshTokenService.DeleteTokenForUser(request.refresh_token, currentUserLogin);
-            if (!isDeleted) return Unauthorized();
+    using var transaction = await _context.Database.BeginTransactionAsync();
 
-            var expDate = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expClaim)).UtcDateTime;
-            await _revocationService.Revoke(jti, expDate);
+    var ownerLogin = await _refreshTokenService.GetTokenOwner(request.refresh_token);
+    if (ownerLogin == null) return Unauthorized("Токен не найден или просрочен");
+    if (ownerLogin != currentUserLogin) return Forbid();
 
-            return NoContent(); 
+    var isDeleted = await _refreshTokenService.DeleteTokenForUser(request.refresh_token, currentUserLogin);
+    if (!isDeleted) return Unauthorized();
+
+    var expDate = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expClaim)).UtcDateTime;
+    await _revocationService.Revoke(jti, expDate);
+
+    await transaction.CommitAsync();
+
+    return NoContent(); 
         }
     }
 }

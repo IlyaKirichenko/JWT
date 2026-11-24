@@ -49,11 +49,11 @@ builder.Services
         {
             OnTokenValidated = async context =>
             {
-                var jti = context.Principal?.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti)?.Value;
+                var jti = context.Principal?.FindFirst("jti")?.Value;//FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti)?.Value;
 
                 if (string.IsNullOrEmpty(jti))
                 {
-                    context.Fail("В JWT отсутствует jti");
+                    context.Fail("В JWT нет jti");
                     return;
                 }
 

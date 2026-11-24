@@ -15,7 +15,11 @@ namespace JWT.Services
 
         public async Task<bool> IsRevoked(string jti)
         {
-            var expired = await _context.RevokedTokens.Where(t => t.ExpiresAt < DateTime.UtcNow).ToListAsync();
+            var now = DateTime.UtcNow;
+            var expired = await _context.RevokedTokens
+                .Where(t => t.ExpiresAt < now)
+                .ToListAsync();
+
             if (expired.Any())
             {
                 _context.RevokedTokens.RemoveRange(expired);

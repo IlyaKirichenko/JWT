@@ -55,7 +55,7 @@ namespace JWT.Services
 
                 var now = DateTime.UtcNow;
 
-                if (existingToken == null || existingToken.ExpiresAt <= now)
+                if (existingToken == null || existingToken.ExpiresAt <= now || existingToken.User == null)
                 {
                     return null;
                 }
@@ -79,19 +79,21 @@ namespace JWT.Services
         }
         public async Task<string?> GetTokenOwner(string token)
         {
+            var now = DateTime.UtcNow;
             var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
             var refreshToken = await _context.RefreshTokens
                 .Include(r => r.User)
-                .FirstOrDefaultAsync(r => r.TokenHash == hash);
+                .FirstOrDefaultAsync(r => r.TokenHash == hash && r.ExpiresAt > now);
 
             return refreshToken?.User?.Login;
         }
         public async Task<bool> DeleteTokenForUser(string token, string login)
         {
+            var now = DateTime.UtcNow;
             var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
             var refreshToken = await _context.RefreshTokens
                 .Include(r => r.User)
-                .FirstOrDefaultAsync(r => r.TokenHash == hash && r.User.Login == login);
+                .FirstOrDefaultAsync(r => r.TokenHash == hash && r.User.Login == login && r.ExpiresAt > now);
 
             if (refreshToken == null) return false;
 
